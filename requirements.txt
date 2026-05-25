@@ -1,0 +1,22 @@
+# CFECT-Quantum-Engine Dependencies
+# Install with: pip install -r requirements.txt
+
+# Core numerical libraries
+numpy>=1.24.0
+scipy>=1.10.0
+
+# Machine learning
+scikit-learn>=1.2.0
+
+# Performance optimization
+numba>=0.57.0
+
+# Visualization
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# EEG processing (required for full mode)
+mne>=1.4.0
+
+# Data handling
+pandas>=2.0.0

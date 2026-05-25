@@ -1,0 +1,17 @@
+CFECT-Quantum-Engine Classification Report
+==================================================
+Mean Static RF Accuracy: 96.30%
+Mean CFECT HMM Accuracy: 93.80%
+
+Detailed Classification Report:
+              precision    recall  f1-score   support
+
+        Wake       0.98      1.00      0.99       225
+          N1       0.96      0.49      0.65        94
+          N2       0.93      1.00      0.96       393
+          N3       1.00      0.94      0.97       135
+         REM       0.86      0.96      0.91       153
+
+    accuracy                           0.94      1000
+   macro avg       0.94      0.88      0.90      1000
+weighted avg       0.94      0.94      0.93      1000
