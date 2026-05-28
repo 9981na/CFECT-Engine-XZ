@@ -1,0 +1,89 @@
+
+name: CFECT Verification CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  verification:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.9", "3.10"]
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Run numerical robustness verification
+      run: |
+        python reproduce_all.py --verify
+    
+    - name: Verify coefficient reproducibility
+      run: |
+        python -c "
+        from statistics.lmm_evaluator import LMMEvaluator
+        evaluator = LMMEvaluator()
+        evaluator.load_data('data/processed/chb_mit_csd_master.csv')
+        result = evaluator.fit()
+        assert abs(result['beta_phi1z'] - 0.436) < 0.001, 'Beta phi1z mismatch'
+        assert abs(result['beta_varz'] + 0.107) < 0.001, 'Beta varz mismatch'
+        print('All coefficient verification passed!')
+        "
+    
+    - name: Verify topological crossover timing
+      run: |
+        python -c "
+        from statistics.ols_trend_flow import OLSTrendFlow
+        trend = OLSTrendFlow()
+        trend.load_data('data/processed/chb_mit_csd_master.csv')
+        crossover_time = trend.find_crossover()
+        assert abs(crossover_time + 18.32) < 0.1, 'Crossover timing mismatch'
+        print(f'Topological crossover at {crossover_time:.2f} min verified!')
+        "
+
+  documentation:
+    runs-on: ubuntu-latest
+    needs: verification
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Build documentation
+      run: |
+        pip install mkdocs mkdocs-material
+        mkdocs build
+
+  release:
+    runs-on: ubuntu-latest
+    needs: [verification, documentation]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Create release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v1.0.0
+        release_name: CFECT Engine v1.0.0
+        body: |
+          ## Release Notes
+          - CHB-MIT epilepsy pre-withdrawal analysis
+          - SDDB sudden death terminal dynamics
+          - Verified reproducibility: beta_phi1z = +0.436, beta_varz = -0.107
+          - Topological crossover at -18.32 min
