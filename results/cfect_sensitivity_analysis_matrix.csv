@@ -1,0 +1,4 @@
+Window_Size,Overlap,Beta_Phi1_Z,Z_Value_Phi1,Beta_Variance_Z,Z_Value_Var,Robustness_Status
+500,75%,0.43593,104.787,-0.10243,-40.973,PASS
+1000,75%,0.43593,104.787,-0.10243,-40.973,PASS
+1500,75%,0.43593,104.787,-0.10243,-40.973,PASS
