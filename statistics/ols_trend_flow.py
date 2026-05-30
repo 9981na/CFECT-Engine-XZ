@@ -7,7 +7,7 @@ Minute-scale renormalization time-axis OLS trend regression
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
-from scipy.linalg import cond
+from numpy.linalg import cond
 
 class OLSTrendFlow:
     """

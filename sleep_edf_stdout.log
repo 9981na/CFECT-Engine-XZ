@@ -1,0 +1,259 @@
+============================================================
+  Sleep-EDF CFECT 特征提取engine v1.0
+  197 全夜多导睡眠记录 | Fpz-Cz @ 100Hz
+============================================================
+
+[Step 0] File Discovery...
+  [WARN]  No hypnogram for SC4011, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4011E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4011EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4021, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4021E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4021EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4022, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4022E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4022EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4032, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4032E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4032EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4072, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4072E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4072EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4082, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4082E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4082EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4122, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4122E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4122EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4141, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4141E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4141EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4142, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4142E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4142EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4171, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4171E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4171EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4191, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4191E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4191EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4192, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4192E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4192EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4221, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4221E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4221EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4231, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4231E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4231EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4232, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4232E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4232EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4242, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4242E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4242EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4251, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4251E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4251EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4252, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4252E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4252EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4261, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4261F0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4261EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4262, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4262F0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4262EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4271, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4271F0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4271EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4272, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4272F0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4272EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4281, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4281G0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4281EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4282, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4282G0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4282EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4291, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4291G0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4291EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4292, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4292G0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4292EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4302, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4302E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4302EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4312, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4312E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4312EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4331, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4331F0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4331EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4332, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4332F0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4332EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4341, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4341F0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4341EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4342, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4342F0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4342EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4351, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4351F0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4351EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4352, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4352F0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4352EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4362, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4362F0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4362EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4371, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4371F0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4371EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4372, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4372F0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4372EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4381, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4381F0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4381EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4382, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4382F0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4382EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4402, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4402E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4402EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4411, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4411E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4411EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4412, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4412E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4412EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4421, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4421E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4421EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4422, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4422E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4422EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4431, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4431E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4431EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4432, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4432E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4432EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4442, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4442E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4442EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4451, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4451F0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4451EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4452, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4452F0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4452EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4461, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4461F0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4461EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4462, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4462F0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4462EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4471, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4471F0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4471EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4472, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4472F0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4472EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4481, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4481F0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4481EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4482, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4482F0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4482EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4491, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4491G0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4491EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4492, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4492G0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4492EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4501, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4501E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4501EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4502, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4502E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4502EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4511, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4511E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4511EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4512, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4512E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4512EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4522, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4522E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4522EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4531, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4531E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4531EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4532, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4532E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4532EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4541, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4541F0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4541EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4542, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4542F0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4542EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4551, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4551F0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4551EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4552, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4552F0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4552EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4561, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4561F0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4561EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4562, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4562F0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4562EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4571, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4571F0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4571EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4572, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4572F0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4572EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4581, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4581G0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4581EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4582, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4582G0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4582EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4591, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4591G0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4591EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4592, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4592G0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4592EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4602, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4602E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4602EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4611, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4611E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4611EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4612, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4612E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4612EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4621, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4621E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4621EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4622, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4622E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4622EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4631, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4631E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4631EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4632, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4632E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4632EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4641, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4641E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4641EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4642, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4642E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4642EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4651, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4651E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4651EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4652, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4652E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4652EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4661, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4661E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4661EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4662, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4662E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4662EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4671, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4671G0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4671EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4672, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4672G0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4672EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4702, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4702E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4702EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4712, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4712E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4712EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4722, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4722E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4722EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4731, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4731E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4731EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4732, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4732E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4732EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4741, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4741E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4741EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4752, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4752E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4752EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4761, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4761E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4761EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4762, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4762E0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4762EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4771, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4771G0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4771EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4772, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4772G0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4772EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4801, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4801G0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4801EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4802, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4802G0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4802EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4811, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4811G0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4811EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4812, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4812G0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4812EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4821, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4821G0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4821EC-Hypnogram.edf
+  [WARN]  No hypnogram for SC4822, psg=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4822G0-PSG.edf, tried=E:\MEM\paper\real\data\sleep-edf-database-expanded-1.0.0\sleep-cassette\SC4822EC-Hypnogram.edf
+  [WARN]  No hypnogram for ST7021J0
+  [WARN]  No hypnogram for ST7022J0
+  [WARN]  No hypnogram for ST7041J0
+  [WARN]  No hypnogram for ST7042J0
+  [WARN]  No hypnogram for ST7051J0
+  [WARN]  No hypnogram for ST7052J0
+  [WARN]  No hypnogram for ST7061J0
+  [WARN]  No hypnogram for ST7062J0
+  [WARN]  No hypnogram for ST7071J0
+  [WARN]  No hypnogram for ST7072J0
+  [WARN]  No hypnogram for ST7081J0
+  [WARN]  No hypnogram for ST7082J0
+  [WARN]  No hypnogram for ST7091J0
+  [WARN]  No hypnogram for ST7092J0
+  [WARN]  No hypnogram for ST7101J0
+  [WARN]  No hypnogram for ST7102J0
+  [WARN]  No hypnogram for ST7111J0
+  [WARN]  No hypnogram for ST7112J0
+  [WARN]  No hypnogram for ST7121J0
+  [WARN]  No hypnogram for ST7122J0
+  [WARN]  No hypnogram for ST7131J0
+  [WARN]  No hypnogram for ST7132J0
+  [WARN]  No hypnogram for ST7141J0
+  [WARN]  No hypnogram for ST7142J0
+  [WARN]  No hypnogram for ST7151J0
+  [WARN]  No hypnogram for ST7152J0
+  [WARN]  No hypnogram for ST7161J0
+  [WARN]  No hypnogram for ST7162J0
+  [WARN]  No hypnogram for ST7171J0
+  [WARN]  No hypnogram for ST7172J0
+  [WARN]  No hypnogram for ST7181J0
+  [WARN]  No hypnogram for ST7182J0
+  [WARN]  No hypnogram for ST7191J0
+  [WARN]  No hypnogram for ST7192J0
+  [WARN]  No hypnogram for ST7201J0
+  [WARN]  No hypnogram for ST7202J0
+  [WARN]  No hypnogram for ST7211J0
+  [WARN]  No hypnogram for ST7212J0
+  [WARN]  No hypnogram for ST7221J0
+  [WARN]  No hypnogram for ST7222J0
+  [WARN]  No hypnogram for ST7241J0
+  [WARN]  No hypnogram for ST7242J0
+
+[DATA] File pairs found:
+  Sleep Cassette (SC): 45
+  Sleep Telemetry (ST): 2
+  Total: 47
+
+[Step 1-2] Processing 47 records...
+
+  [1/47] SC4001 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [2/47] SC4002 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [3/47] SC4012 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [4/47] SC4031 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [5/47] SC4041 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [6/47] SC4042 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [7/47] SC4051 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [8/47] SC4052 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [9/47] SC4061 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [10/47] SC4062 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [11/47] SC4071 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [12/47] SC4081 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [13/47] SC4091 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [14/47] SC4092 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [15/47] SC4101 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [16/47] SC4102 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [17/47] SC4111 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [18/47] SC4112 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [19/47] SC4121 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [20/47] SC4131 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [21/47] SC4151 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [22/47] SC4152 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [23/47] SC4161 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [24/47] SC4162 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [25/47] SC4172 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [26/47] SC4181 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [27/47] SC4182 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [28/47] SC4201 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [29/47] SC4202 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [30/47] SC4211 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [31/47] SC4212 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [32/47] SC4222 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [33/47] SC4241 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [34/47] SC4301 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [35/47] SC4311 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [36/47] SC4321 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [37/47] SC4322 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [38/47] SC4401 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [39/47] SC4441 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [40/47] SC4601 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [41/47] SC4701 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [42/47] SC4711 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [43/47] SC4721 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [44/47] SC4742 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [45/47] SC4751 (SC)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [46/47] ST7011J0 (ST)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+  [47/47] ST7012J0 (ST)... [FAIL] Error: Trying to access channel 0, but only 0 channels found
+
+[FAIL] No features extracted.

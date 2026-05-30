@@ -74,16 +74,22 @@ def find_pairs():
         else:
             logger.warning(f"No hypnogram for {rec_id}")
     
-    # ST
+    # ST — 使用前缀匹配 (e.g. ST7011J0-PSG -> ST7011JP-Hypnogram)
+    # PSG 后缀: J0 (Placebo), Hypnogram 后缀: JP, JM, JO 等
     st_psg = sorted(glob.glob(os.path.join(ST_DIR, "*-PSG.edf")))
-    st_hyp = sorted(glob.glob(os.path.join(ST_DIR, "*-Hypnogram.edf")))
-    hyp_map_st = {os.path.basename(h).replace('-Hypnogram.edf', '')[:6]: h for h in st_hyp}
+    st_hyp_list = sorted(glob.glob(os.path.join(ST_DIR, "*-Hypnogram.edf")))
+    hyp_by_prefix = {}
+    for h in st_hyp_list:
+        hbase = os.path.basename(h).replace('-Hypnogram.edf', '')
+        prefix = hbase[:6]  # e.g. ST7011
+        hyp_by_prefix[prefix] = h
     
     for psg in st_psg:
         base = os.path.basename(psg).replace('-PSG.edf', '')
-        rec_id = base[:6]
-        if rec_id in hyp_map_st:
-            pairs.append((rec_id, psg, hyp_map_st[rec_id], 'ST'))
+        rec_id = base  # 完整 ID: e.g. ST7011J0
+        prefix = base[:6]  # e.g. ST7011
+        if prefix in hyp_by_prefix:
+            pairs.append((rec_id, psg, hyp_by_prefix[prefix], 'ST'))
         else:
             logger.warning(f"No hypnogram for {rec_id}")
     
@@ -235,11 +241,13 @@ def add_meta_labels(df):
     df['Night'] = df['Subject_ID'].apply(
         lambda x: 1 if 'E0' in x or 'J0' in x else 2)
     
-    # Drug (ST only)
+    # Drug (ST only): J0 suffix = Placebo, JP suffix = Temazepam
     df['Is_Drug'] = df.apply(
-        lambda r: 0 if r['Study_Type'] == 'SC' or 'J0' in r['Subject_ID']
+        lambda r: 0 if r['Study_Type'] == 'SC' or r['Subject_ID'].endswith('J0')
                   else (1 if 'JP' in r['Subject_ID'] else 0), axis=1)
-    df['Drug_Type'] = df['Is_Drug'].map({0: 'Placebo/None', 1: 'Temazepam'})
+    df['Drug_Type'] = df.apply(
+        lambda r: 'None' if r['Study_Type'] == 'SC'
+                  else ('Temazepam' if r['Is_Drug'] else 'Placebo'), axis=1)
     
     return df
 
@@ -342,8 +350,10 @@ def main():
     logger.info(f"  SC: {len(df[df['Study_Type']=='SC']['Subject_ID'].unique())} subjects")
     logger.info(f"  ST: {len(df[df['Study_Type']=='ST']['Subject_ID'].unique())} subjects")
     logger.info(f"  Total windows: {len(df):,}")
-    logger.info(f"  Temazepam: {len(df[df['Drug_Type']=='Temazepam']):,}")
-    logger.info(f"  Placebo/None: {len(df[df['Drug_Type']=='Placebo/None']):,}")
+    from collections import Counter
+    dt_counts = Counter(df['Drug_Type'])
+    for dt, cnt in dt_counts.most_common():
+        logger.info(f"  {dt}: {cnt:,}")
     
     return df
 

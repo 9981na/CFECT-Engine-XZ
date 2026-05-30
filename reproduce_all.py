@@ -409,7 +409,20 @@ def verify_dnb_criteria(df):
             print(f"  DNB Criteria:      {'PASS' if criteria_ok else 'FAIL'}")
 
 def generate_chb_mit_synthetic(output_path):
-    """Generate synthetic CHB-MIT data with realistic characteristics."""
+    """
+    [LEGACY] Generate synthetic CHB-MIT data with realistic characteristics.
+    
+    WARNING: This function generates SYNTHETIC data by baking in expected
+    coefficient values (+0.436, -0.107) at RANDOM_SEED=42. All results
+    from this function are artifacts of the random seed, NOT real data.
+    
+    This exists only for infrastructure testing (permutation test code path).
+    Results from this function MUST NOT be cited as experimental evidence.
+    
+    For real data analysis, use:
+      - data/processed/chb_mit_csd_master.csv (if available)
+      - pipelines/run_chbmit_csd.py (to regenerate from raw)
+    """
     np.random.seed(RANDOM_SEED)
     
     n_windows_per_patient = 6000
@@ -421,7 +434,8 @@ def generate_chb_mit_synthetic(output_path):
     # Generate realistic time-to-onset distribution
     time_to_onset = np.random.randn(total_windows) * 600 - 900
     
-    # Generate Phi1_Z with pre-ictal increase towards seizure
+    # [LEGACY] Phi1_Z and Var_Z coefficients are HARDCODED from RANDOM_SEED=42
+    # These ARE NOT derived from any real patient data
     phi1_base = np.where(conditions == 'Pre-ictal', 0.436, 0)
     phi1_trend = np.where(conditions == 'Pre-ictal', time_to_onset / 6000, 0)
     phi1_z = phi1_base + phi1_trend + np.random.randn(total_windows) * 0.5
@@ -448,10 +462,21 @@ def generate_chb_mit_synthetic(output_path):
     df = pd.DataFrame(data)
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df.to_csv(output_path, index=False)
-    print(f"Generated {len(df)} rows of synthetic CHB-MIT data")
+    print(f"[LEGACY] Generated {len(df)} rows of SYNTHETIC CHB-MIT data (seed={RANDOM_SEED})")
+    print("[LEGACY] WARNING: These coefficients are seed artifacts, not real evidence.")
 
 def generate_sddb_synthetic(output_path):
-    """Generate synthetic SDDB terminal dynamics data."""
+    """
+    [LEGACY] Generate synthetic SDDB terminal dynamics data.
+    
+    WARNING: This function generates SYNTHETIC data. DNB criteria
+    (Std > 2.0, External Corr < 0.1, Autocorr > 0.9) are hardcoded
+    into the generation logic. These are NOT from real patient data.
+    
+    For real data analysis, use:
+      - data/processed/sddb_terminal_master.csv (if available)
+      - pipelines/sddb_extract_afib.py (to regenerate from raw)
+    """
     np.random.seed(RANDOM_SEED)
     
     n_samples = 1000
@@ -469,7 +494,8 @@ def generate_sddb_synthetic(output_path):
     df = pd.DataFrame(data)
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df.to_csv(output_path, index=False)
-    print(f"Generated {len(df)} rows of synthetic SDDB data")
+    print(f"[LEGACY] Generated {len(df)} rows of SYNTHETIC SDDB data")
+    print("[LEGACY] WARNING: DNB criteria values are seed artifacts, not real evidence.")
 
 def main():
     parser = argparse.ArgumentParser(
@@ -529,11 +555,11 @@ Expected outputs:
     print("="*60)
     
     if epilepsy_status and cardiac_status:
-        print("\n✅ ALL VERIFICATIONS PASSED")
+        print("\n[OK] ALL VERIFICATIONS PASSED")
         print("The CFECT engine has successfully reproduced all critical results.")
         return 0
     else:
-        print("\n❌ SOME VERIFICATIONS FAILED")
+        print("\n[FAIL] SOME VERIFICATIONS FAILED")
         return 1
 
 if __name__ == "__main__":

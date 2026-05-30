@@ -1,0 +1,81 @@
+{
+  "verification_timestamp": "2026-05-30T12:18:00+08:00",
+  "pipeline_version": "CFECT-Engine-XZ @ 3e3b358",
+  "datasets": {
+    "sleep_edf": {
+      "total_windows": 112633,
+      "source": "PhysioNet sleep-edf-database-expanded-1.0.0",
+      "pipeline": "pipelines/run_sleep_edf_csd.py",
+      "stage_means_phi1_z": {
+        "W": {"all": -14.3438, "sc": -16.2074, "st": -5.3135, "n_all": 17841},
+        "N1": {"all": -11.9895, "sc": -13.7925, "st": -4.0389, "n_all": 29168},
+        "N2": {"all": -4.4151, "sc": -5.1429, "st": -1.8261, "n_all": 32684},
+        "N3": {"all": -0.2634, "sc": -0.4070, "st": 0.1149, "n_all": 25128},
+        "REM": {"all": -8.1706, "sc": -9.8118, "st": -1.6556, "n_all": 7812}
+      },
+      "tripolar_wake": {
+        "sc_healthy_wake": {"phi1_z": -16.2074, "n_windows": 14789, "interpretation": "deep dissipation — healthy baseline"},
+        "st_placebo_wake": {"phi1_z": -5.3135, "n_windows": 3052, "interpretation": "pathological insomnia — less negative"},
+        "st_temazepam_wake": {"phi1_z": null, "n_windows": 0, "status": "pending re-run after defect #1 fix"}
+      },
+      "range_stats": {
+        "min": -541.9806,
+        "max": 5.7777,
+        "p1": -82.7386,
+        "p99": 1.8531
+      }
+    },
+    "chb_mit": {
+      "total_windows": 59992,
+      "source": "PhysioNet chbmit (labeled)",
+      "pipeline": "pipelines/run_chbmit_csd.py",
+      "pre_vs_inter": {
+        "pre_ictal_phi1_z": 0.0145,
+        "inter_ictal_phi1_z": -0.2214,
+        "delta": 0.2359,
+        "n_pre_ictal": 56312,
+        "n_inter_ictal": 3680,
+        "cohens_d": 0.874,
+        "welch_t": 105.1,
+        "permutation_p_1000": 0.001,
+        "interpretation": "Verified: p=0.001 from 1,000 shuffle permutation test"
+      }
+    },
+    "sddb": {
+      "total_windows": 2073,
+      "source": "PhysioNet sddb",
+      "pipeline": "pipelines/sddb_extract_afib.py"
+    }
+  },
+  "defects": {
+    "defect_1_st_temazepam": {
+      "severity": "high",
+      "status": "fixed",
+      "file": "pipelines/run_sleep_edf_csd.py",
+      "lines_changed": [84, 87],
+      "change_summary": "rec_id = base (not base[:6]) to preserve J0/JP suffix"
+    },
+    "defect_2_reproduce_all_synthetic": {
+      "severity": "critical",
+      "status": "not_fixed",
+      "file": "reproduce_all.py",
+      "location": "lines 411-451",
+      "issue": "synthetic data with random seed 42"
+    },
+    "defect_3_sleep_staging_noise": {
+      "severity": "critical",
+      "status": "not_fixed",
+      "file": "pipelines/run_eeg_sleep_staging.py",
+      "location": "line 184",
+      "issue": "accuracy = 93.3 + N(0,1.5) random noise"
+    }
+  },
+  "hardened_gateways": {
+    "statistics/critical_slowing_test.py": {"lines": 210, "status": "implemented"},
+    "statistics/stationarity_prescreen.py": {"lines": 161, "status": "implemented"},
+    "cfect_core/fluctuation_theorem.py": {"lines": 187, "status": "implemented"},
+    "cfect_core/integrated_info.py": {"lines": 222, "status": "implemented"},
+    "cfect_core/spatial_ews.py": {"lines": 206, "status": "implemented"},
+    "pipelines/n1_baseline_comparison.py": {"lines": 184, "status": "implemented"}
+  }
+}

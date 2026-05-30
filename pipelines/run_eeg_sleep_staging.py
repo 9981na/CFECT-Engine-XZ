@@ -27,7 +27,17 @@ np.random.seed(SEED)
 
 def generate_synthetic_eeg_data(num_samples: int = 1000, num_features: int = 11) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
-    Generates synthetic EEG features for demonstration purposes.
+    [LEGACY] Generates synthetic EEG features for demonstration purposes.
+    
+    WARNING: This function generates SYNTHETIC data. Feature patterns are
+    hardcoded per sleep stage with added Gaussian noise. Results from this
+    function reflect the manually defined patterns, NOT real EEG physiology.
+    
+    The N1 F1-score from this data is guaranteed to be low because N1's
+    pattern ([0.5, 0.10, ...]) is deliberately positioned close to Wake
+    ([0.8, 0.05, ...]) and N2 ([0.4, 0.15, ...]) in feature space.
+    
+    For real data, use run_full_mode() with Sleep-EDF dataset downloaded.
     
     Args:
         num_samples: Number of epochs to generate
@@ -178,23 +188,30 @@ def run_full_mode(data_dir: str = './data/sleep-edf') -> None:
     logging.info("[Full Mode] Feature extraction complete.")
     logging.info("[Full Mode] Training classifiers...")
     
-    # For demonstration, we generate synthetic results
+    # [LEGACY] Synthetic placeholder — NOT real Sleep-EDF results
+    # These values (92.5, 93.3) are hardcoded constants + random noise,
+    # not derived from actual EEG feature extraction or classification.
+    # 
+    # To reproduce with real data:
+    #   1. Download Sleep-EDF (see data/DATA_DOWNLOAD_GUIDE.md)
+    #   2. Run: python pipelines/run_sleep_edf_csd.py
     np.random.seed(SEED)
     mean_raw_acc = 92.5 + np.random.normal(0, 2.0)
     mean_hmm_acc = 93.3 + np.random.normal(0, 1.5)
     
-    logging.info(f"\n[RESULTS] Static RF Accuracy: {mean_raw_acc:.2f}%")
-    logging.info(f"[RESULTS] CFECT HMM Accuracy: {mean_hmm_acc:.2f}%")
+    logging.info(f"\n[LEGACY][RESULTS] Static RF Accuracy: {mean_raw_acc:.2f}% (synthetic)")
+    logging.info(f"[LEGACY][RESULTS] CFECT HMM Accuracy: {mean_hmm_acc:.2f}% (synthetic)")
     
     # Save results
     ensure_dir('./results')
     with open('./results/classification_report.txt', 'w') as f:
         f.write("CFECT-Quantum-Engine Full Mode Report\n")
         f.write("=" * 50 + "\n")
+        f.write("[LEGACY] These values are synthetic placeholders, not real results.\n")
         f.write(f"Mean Static RF Accuracy: {mean_raw_acc:.2f}%\n")
         f.write(f"Mean CFECT HMM Accuracy: {mean_hmm_acc:.2f}%\n")
     
-    logging.info("[RESULTS] Full mode execution complete.")
+    logging.info("[LEGACY] Full mode execution complete (synthetic placeholder).")
 
 def main() -> None:
     """

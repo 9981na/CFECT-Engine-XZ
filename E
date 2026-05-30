@@ -1,0 +1,227 @@
+#!/usr/bin/env python3
+"""
+CFECT Real-Data Master Runner — 一体化运行所有管道
+=========================================================================
+执行所有真实数据管道，带实时进度仪表盘 + 详细日志 + 最终汇总报告
+
+用法:
+  python run_all_real.py                    # 运行全部
+  python run_all_real.py --skip-sleep-edf    # 跳过慢的
+  python run_all_real.py --fast-only         # 只跑快的
+  python run_all_real.py --dry-run           # 只检查不走
+"""
+
+import os, sys, json, time, importlib, inspect, traceback
+from datetime import datetime
+from pathlib import Path
+from typing import Dict, Any
+
+BASE = Path(r"E:\MEM\paper\real")
+PIPELINES_DIR = BASE / "pipelines"
+OUTPUTS_DIR = BASE / "outputs"
+DATA_DIR = BASE / "data"
+
+os.makedirs(OUTPUTS_DIR, exist_ok=True)
+
+
+def setup_master_log():
+    """Setup master log file."""
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    log_path = OUTPUTS_DIR / f"run_all_real_{timestamp}.log"
+    f = open(log_path, 'w', encoding='utf-8')
+    return f, log_path, timestamp
+
+
+def log(msg, f=None, end='\n'):
+    """Print to both console and log file."""
+    print(msg, end=end)
+    if f and not f.closed:
+        f.write(msg + end)
+        f.flush()
+
+
+def load_and_run(module_path: Path, log_f, results: Dict, label: str) -> Dict[str, Any]:
+    """动态加载并运行一个管道模块。"""
+    try:
+        # 动态导入
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            module_path.stem, str(module_path)
+        )
+        mod = importlib.util.module_from_spec(spec)
+        # 把路径加到sys.path让内部imports能工作
+        sys.path.insert(0, str(module_path.parent.parent.parent))
+        sys.path.insert(0, str(module_path.parent))
+        spec.loader.exec_module(mod)
+
+        log(f"\n{'─' * 60}", log_f)
+        log(f"▶ [{label}] Loading module: {module_path.name}", log_f)
+        log(f"{'─' * 60}", log_f)
+
+        # 找到run_pipeline函数并执行
+        if hasattr(mod, 'run_pipeline'):
+            t_start = time.time()
+            result = mod.run_pipeline()
+            elapsed = time.time() - t_start
+            status = '✓ OK' if result is not None else '⚠ PARTIAL'
+            log(f"\n[{status}] {label} completed in {elapsed:.1f}s", log_f)
+            results[label] = {
+                'status': status,
+                'elapsed': round(elapsed, 1),
+                'result': result if isinstance(result, dict) else {},
+            }
+        else:
+            log(f"  ⚠ No run_pipeline() function found in {module_path.name}", log_f)
+            results[label] = {'status': '⚠ NO ENTRY', 'elapsed': 0}
+
+    except Exception as e:
+        elapsed = 0
+        log(f"\n[✗ FAIL] {label}: {e}", log_f)
+        log(traceback.format_exc(), log_f)
+        results[label] = {'status': '✗ FAIL', 'elapsed': 0, 'error': str(e)}
+
+    return results
+
+
+def print_summary(results: Dict, log_f, total_elapsed: float, timestamp: str):
+    """打印/写入汇总表。"""
+    lines = [
+        '',
+        '=' * 70,
+        '  CFECT REAL-DATA EXECUTION SUMMARY',
+        f'  Timestamp: {timestamp}',
+        f'  Total time: {total_elapsed:.1f}s',
+        '=' * 70,
+        f'  {"Pipeline":<30s} {"Status":<12s} {"Time":<8s} Key Result',
+        f'  {"─" * 28}  {"─" * 10}  {"─" * 6}  {"─" * 20}',
+    ]
+
+    for label, info in results.items():
+        status = info.get('status', '?')
+        elapsed = info.get('elapsed', 0)
+        result = info.get('result', {}) or {}
+        # Extract a key result
+        key = ''
+        if 'permutation_p' in result:
+            p = result['permutation_p']
+            key = f"P={p:.4f}"
+        elif 'epr_mean' in result.get('fluctuation_theorem', {}):
+            epr = result['fluctuation_theorem']['epr_mean']
+            key = f"EPR={epr:.3f}"
+        elif 'mean_acc_hmm' in result:
+            key = f"HMM={result['mean_acc_hmm']:.1f}%"
+        elif 'n_critical_points' in result:
+            key = f"Critical={result['n_critical_points']}"
+
+        lines.append(f"  {label:<30s} {status:<12s} {elapsed:<6.1f}s {key}")
+
+    lines += [
+        '=' * 70,
+        f'  Log file: outputs/run_all_real_{timestamp}.log',
+        '=' * 70,
+    ]
+
+    summary = '\n'.join(lines)
+    log(summary, log_f)
+
+
+def main():
+    import argparse
+    parser = argparse.ArgumentParser(description='CFECT Real-Data Master Runner')
+    parser.add_argument('--fast-only', action='store_true',
+                        help='Only run fast pipelines (< 1min)')
+    parser.add_argument('--skip-sleep-edf', action='store_true',
+                        help='Skip Sleep-EDF (the slowest)')
+    parser.add_argument('--dry-run', action='store_true',
+                        help='Print what would be run without executing')
+    parser.add_argument('--pipeline', type=str, default=None,
+                        help='Run a specific pipeline by filename (e.g., run_chbmit_csd)')
+    args = parser.parse_args()
+
+    log_f, log_path, timestamp = setup_master_log()
+    log_path_str = str(log_path)
+
+    log(f'{"=" * 60}', log_f)
+    log(f'CFECT REAL-DATA MASTER RUNNER', log_f)
+    log(f'Timestamp: {timestamp}', log_f)
+    log(f'Log file: {log_path_str}', log_f)
+    log(f'{"=" * 60}', log_f)
+
+    # Define pipelines in execution order
+    pipelines = [
+        {
+            'name': 'CHB-MIT CSD',
+            'file': 'run_chbmit_csd.py',
+            'fast': True,
+        },
+        {
+            'name': 'SDDB Solver',
+            'file': 'run_sddb_solver.py',
+            'fast': True,
+        },
+        {
+            'name': 'ECG Phase',
+            'file': 'run_ecg_phase.py',
+            'fast': True,
+        },
+        # Sleep-EDF放在最后（最慢）
+        {
+            'name': 'Sleep-EDF',
+            'file': 'run_sleep_edf.py',
+            'fast': False,
+        },
+    ]
+
+    # Apply filters
+    if args.fast_only:
+        pipelines = [p for p in pipelines if p.get('fast', False)]
+        log(f"\n[FILTER] Fast-only mode: {len(pipelines)} pipelines", log_f)
+
+    if args.skip_sleep_edf:
+        pipelines = [p for p in pipelines if p['name'] != 'Sleep-EDF']
+        log(f"\n[FILTER] Skipping Sleep-EDF: {len(pipelines)} pipelines", log_f)
+
+    if args.pipeline:
+        pipelines = [p for p in pipelines if args.pipeline in p['file']]
+        log(f"\n[FILTER] Specific pipeline '{args.pipeline}': {len(pipelines)} match", log_f)
+
+    # Announce plan
+    log(f"\nPipelines to run:", log_f)
+    for i, p in enumerate(pipelines):
+        speed = '⚡' if p.get('fast') else '⏳'
+        log(f"  {i + 1}. {speed} {p['name']:15s} ({p['file']})", log_f)
+
+    if args.dry_run:
+        log(f"\n[Dry Run] No pipelines executed. Use --dry-run to run.", log_f)
+        log_f.close()
+        return
+
+    if not pipelines:
+        log(f"\n[WARN] No pipelines match the given filters.", log_f)
+        log_f.close()
+        return
+
+    # Execute each pipeline
+    results = {}
+    t_total_start = time.time()
+
+    for p in pipelines:
+        module_path = PIPELINES_DIR / p['file']
+        if not module_path.exists():
+            log(f"\n[✗] Module not found: {module_path}", log_f)
+            results[p['name']] = {'status': '✗ NOT FOUND', 'elapsed': 0}
+            continue
+        results = load_and_run(module_path, log_f, results, p['name'])
+
+    total_elapsed = time.time() - t_total_start
+
+    # Print summary
+    print_summary(results, log_f, total_elapsed, timestamp)
+
+    log(f"\nAll pipelines complete. Log: {log_path_str}", log_f)
+    log_f.close()
+    print(f"\nDone. Full log at:\n  {log_path_str}")
+
+
+if __name__ == '__main__':
+    main()
