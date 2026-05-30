@@ -31,17 +31,66 @@ DRUG_MAP = {
     '42': 'Propafenone', '43': 'Amiodarone', '46': 'Metoprolol',
 }
 
+# -- 诊断标签映射表 (from BUT-PDB README, determined by ECG experts) --
+# .hea 文件中不包含诊断信息，此处硬编码
+DIAGNOSIS_MAP = {
+    '01': 'AV Block 2nd Degree (BII) + RBBB (R)',
+    '02': 'Ventricular Bigeminy (B)',
+    '03': 'AV Block 3rd Degree (BIII) + Paced Rhythm (P)',
+    '04': 'Atrial Premature Beat (A)',
+    '05': 'Atrial Premature Beat (A) + VPB (V)',
+    '06': 'Nodal Rhythm (J/NOD)',
+    '07': 'Atrial Fibrillation (AFIB) + Nodal Rhythm (J/NOD)',
+    '08': 'Atrial Fibrillation (AFIB) + Atrial Flutter (AFL)',
+    '09': 'Atrial Premature Beat (A) + Ventricular Escape Beat (E) + SVTA',
+    '10': 'Ventricular Premature Beat (V)',
+    '11': 'Supraventricular Tachyarrhythmia (SVTA)',
+    '12': 'Pre-excitation (PREX)',
+    '13': 'AV Block 2nd Degree (BII) + RBBB (R)',
+    '14': 'Ventricular Bigeminy (B) + VPB (V)',
+    '15': 'Nodal Rhythm (J/NOD)',
+    '16': 'Atrial Premature Beat (A)',
+    '17': 'Atrial Premature Beat (A)',
+    '18': 'Atrial Premature Beat (A)',
+    '19': 'Paced Rhythm (P) + VPB (V)',
+    '20': 'Ventricular Premature Beat (V)',
+    '21': 'LBBB (L) + VPB (V)',
+    '22': 'AV Block 1st Degree (BI) + LBBB (L)',
+    '23': 'Aberrated Atrial Premature Beat (a)',
+    '24': 'Sinus Arrhythmia (NA)',
+    '25': 'VPB (V) + Ventricular Pair (VP)',
+    '26': 'Atrial Premature Beat (A) + RBBB (R)',
+    '27': 'Ventricular Bigeminy (B) + Trigeminy (T) + VPB (V)',
+    '28': 'Atrial Premature Beat (A) + VPB (V)',
+    '29': 'Ventricular Trigeminy (T) + VPB (V)',
+    '30': 'Fusion (F) + Idioventricular Rhythm (IVR) + VPB (V)',
+    '31': 'Fusion (F) + VPB (V)',
+    '32': 'Fusion (F) + VPB (V)',
+    '33': 'VPB (V) + Ventricular Flutter (VFL)',
+    '34': 'RBBB (R)',
+    '35': 'Atrial Premature Beat (A) + VPB (V)',
+    '36': 'LBBB (L) + VPB (V)',
+    '37': 'Normal Sinus Rhythm',
+    '38': 'Atrial Premature Beat (A) + Atrial Flutter (AFL)',
+    '39': 'Atrial Premature Beat (A) + VPB (V)',
+    '40': 'Atrial Premature Beat (A) + VPB (V)',
+    '41': 'Atrial Premature Beat (A) + LBBB (L) + VPB (V)',
+    '42': 'Ventricular Premature Beat (V)',
+    '43': 'Atrial Premature Beat (A) + Supraventricular Tachyarrhythmia (SVTA)',
+    '44': 'Atrial Fibrillation (AFIB)',
+    '45': 'Atrial Fibrillation (AFIB)',
+    '46': 'Atrial Fibrillation (AFIB)',
+    '47': 'Atrial Fibrillation (AFIB)',
+    '48': 'Atrial Fibrillation (AFIB)',
+    '49': 'Atrial Fibrillation (AFIB)',
+    '50': 'Atrial Fibrillation (AFIB)',
+}
 
-def _extract_diagnosis(record):
-    """Extract diagnosis from WFDB record comments field."""
-    comments = record.comments if hasattr(record, 'comments') and record.comments else []
-    for c in comments:
-        c_lower = c.lower()
-        if 'diagnosis' in c_lower:
-            return c.split(':')[1].strip() if ':' in c else c
-        if 'rhythm' in c_lower:
-            return c.split(':')[1].strip() if ':' in c else c
-    return 'Unknown'
+
+def _get_diagnosis(record_id):
+    """Look up diagnosis from hardcoded BUT-PDB map (.hea has no embedded diagnoses)."""
+    return DIAGNOSIS_MAP.get(record_id, 'Unknown')
+
 
 
 def _compute_variance_z_phi1_z(diagnosis, rr_intervals, pwave_samples, fs):
@@ -134,8 +183,9 @@ def parse_brno_university_database(raw_dir, output_dir):
             pwave_ann = wfdb.rdann(record_path, 'pwave')
             qrs_ann = wfdb.rdann(record_path, 'qrs')
 
-            # Step 3: Extract diagnosis from comments
-            diagnosis = _extract_diagnosis(record)
+            # Step 3: Look up diagnosis from hardcoded BUT-PDB map
+            diagnosis = _get_diagnosis(rid)
+
             drug = DRUG_MAP.get(rid, 'None')
 
             # Step 4: Compute RR intervals
@@ -244,19 +294,12 @@ def parse_brno_university_database(raw_dir, output_dir):
 
 
 def quick_diagnosis_check(raw_dir):
-    """Quick check of all 50 records' diagnosis without full parsing."""
-    logger.info("Quick diagnosis check (head comments only):")
+    """Quick check of all 50 records' diagnosis from hardcoded map."""
+    logger.info("Quick diagnosis check (hardcoded BUT-PDB map):")
     for rid in [f"{i:02d}" for i in range(1, 51)]:
-        rp = os.path.join(raw_dir, rid)
-        if not os.path.exists(rp + ".hea"):
-            continue
-        try:
-            record = wfdb.rdrecord(rp)
-            comments = record.comments if hasattr(record, 'comments') else []
-            diag = _extract_diagnosis(record)
-            logger.info(f"  {rid}: {diag}")
-        except:
-            logger.info(f"  {rid}: ERROR")
+        diag = _get_diagnosis(rid)
+        logger.info(f"  {rid}: {diag}")
+
 
 
 if __name__ == "__main__":
