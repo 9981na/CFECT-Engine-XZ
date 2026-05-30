@@ -32,5 +32,5 @@ __all__ = [
     'augment_with_dickey_fuller',
     'adf_stationarity_test', 'check_epoch_stationarity', 'adaptive_max_scale'
 ]
-__version__ = '1.1.0'
+__version__ = '1.2.0'
 __author__ = 'CFECT Quantum Engine Team'

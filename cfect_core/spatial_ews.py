@@ -94,12 +94,10 @@ def morans_i(data_matrix: np.ndarray,
         z_std = np.maximum(z_std, 1e-10)
         z_norm = z / z_std
         
-        # Weighted sum of neighbor products
-        weighted_sum = 0.0
-        for i in range(n):
-            for j in range(n):
-                if W[i, j] > 0:
-                    weighted_sum += W[i, j] * z_norm[:, i] @ z_norm[:, j]
+        # Weighted sum of neighbor products (vectorized)
+        # Avoids O(n² * n_chan²) nested loop — uses matrix multiplication
+        z_corr = z_norm.T @ z_norm  # (n_chan, n_chan) correlation matrix
+        weighted_sum = np.sum(W * z_corr)
         
         # Normalize
         total_var = np.sum(z_norm ** 2)

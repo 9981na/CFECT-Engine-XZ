@@ -40,5 +40,5 @@ __all__ = [
     'effective_info', 'compute_phi_e', 'renorm',
     'spatial_variance', 'morans_i', 'spatial_skewness_kurtosis', 'verify_spatial_ews'
 ]
-__version__ = '1.1.0'
+__version__ = '1.2.0'
 __author__ = 'CFECT Quantum Engine Team'

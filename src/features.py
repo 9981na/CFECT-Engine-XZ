@@ -70,6 +70,12 @@ def extract_multiscale_entropy(
     
     Returns:
         np.ndarray: Multi-scale entropy values across scales 1 to max_scale (shape: [max_scale])
+        
+    Note:
+        max_scale=5 (τ=5 coarse-graining) is safe for N>=300 samples
+        per Stam(2005) stationarity criteria. For short epochs (N<100),
+        reduce max_scale to 2. See statistics/stationarity_prescreen.py
+        for adaptive τ selection via ADF stationarity pre-screening.
     """
     std_dev: float = np.std(signal)
     

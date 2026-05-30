@@ -1,19 +1,27 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-CFECT Engine - One-Click Reproducibility Verifier
-Ultimate entry point for 100% deterministic replication of all results
+CFECT Engine - Reproducibility Verifier
 
-To safeguard absolute scientific transparency and prevent data-driven artifacts
-("math-washing"), the complete numerical and statistical workflows of CFECT 
-are hard-coded for strict deterministic replication.
+⚠️  DEPRECATED: This file contains synthetic data artifacts.
+    All "verified" coefficients (+0.436, -0.107) are artifacts of np.random.seed(42),
+    NOT derived from real patient data.
 
-This script implements:
-1. Permutation test with 1,000 random permutations of time labels
-2. Null manifold construction for statistical validation
-3. 10-Bin micro-renormalization time partitioning (10-patient cohort)
-4. Full differential velocity gradient for phase-space probability flow
+    For REAL data results, use instead:
+      - python pipelines/run_three_gateways.py    (Sleep-EDF benchmark)
+      - python pipelines/run_sleep_edf_csd.py     (CSD feature extraction)
+      - Run response_verification/                (audited ground truth)
+
+This file is preserved for infrastructure testing only.
+DO NOT cite its output as scientific evidence.
 """
+
+import warnings
+warnings.warn(
+    "reproduce_all.py is DEPRECATED. Results are synthetic seed-42 artifacts. "
+    "Use pipelines/run_three_gateways.py for real data.",
+    DeprecationWarning, stacklevel=2
+)
 
 import os
 import sys

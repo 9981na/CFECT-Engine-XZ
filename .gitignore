@@ -1,1 +1,10 @@
-﻿cfect_sleep_edf_hardened_features.csv
+﻿__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.venv/
+.vscode/
+.pre-commit-config.yaml
+cfect_sleep_edf_hardened_features.csv

@@ -69,9 +69,9 @@ def compute_confidence_interval(data: np.ndarray, confidence: float = 0.95) -> T
     n_bootstrap = 1000
     n = len(data)
     
-    np.random.seed(42)
+    rng = np.random.default_rng(42)
     bootstrap_means = np.array([
-        np.mean(np.random.choice(data, size=n, replace=True))
+        np.mean(rng.choice(data, size=n, replace=True))
         for _ in range(n_bootstrap)
     ])
     

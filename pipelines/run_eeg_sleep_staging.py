@@ -1,7 +1,24 @@
 """
 CFECT-Quantum-Engine: EEG Sleep Staging Pipeline
-Implements the 'Reviewer Fast-Pass' mechanism for rapid result verification.
+
+⚠️  DEPRECATED: This file contains synthetic data artifacts.
+    - generate_synthetic_eeg_data() uses hardcoded stage patterns
+    - run_full_mode() reports accuracy = 93.3 + N(0,1.5) random noise
+
+    For REAL data, use instead:
+      - pipelines/run_three_gateways.py   (Sleep-EDF benchmark)
+      - pipelines/n1_baseline_comparison.py  (N1 spectral analysis)
+
+This file is preserved for infrastructure testing only.
+DO NOT cite its output as scientific evidence.
 """
+
+import warnings
+warnings.warn(
+    "run_eeg_sleep_staging.py is DEPRECATED. Results are synthetic. "
+    "Use pipelines/run_three_gateways.py for real data.",
+    DeprecationWarning, stacklevel=2
+)
 
 import argparse
 import logging
