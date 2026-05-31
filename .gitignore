@@ -8,3 +8,16 @@ build/
 .vscode/
 .pre-commit-config.yaml
 cfect_sleep_edf_hardened_features.csv
+
+# Internal development tracking files
+task_progress.md
+.todo_act.md
+.todo_v4.md
+
+# Large data files not suitable for git LFS
+data/raw/
+data/processed/*.csv
+*.npz
+
+# Kimi project memory
+.kimi-memory/

@@ -1,184 +1,185 @@
 
-# CFECT Quantum Engine
+# Constructive Free Energy Condensation Theory (CFECT)
 
-> **Constructive Free-Energy Condensate Theory** - A non-equilibrium statistical mechanics framework for multiscale electrophysiological phase transitions
+> **A Non-Equilibrium Statistical Mechanics Framework for Tracking Macroscopic State Transitions in Living Networks**
 
-[![CI](https://github.com/cfect-org/cfect-engine/actions/workflows/verification_ci.yml/badge.svg)](https://github.com/cfect-org/cfect-engine/actions/workflows/verification_ci.yml)
+[![CI](https://github.com/9981na/CFECT-Engine-XZ/actions/workflows/verification_ci.yml/badge.svg)](https://github.com/9981na/CFECT-Engine-XZ/actions/workflows/verification_ci.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python Version](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10-blue)](https://www.python.org/downloads/)
 
 ---
 
-## 🚀 Quick Start & One-Line Replication
+## 📋 Overview
 
-To safeguard absolute scientific transparency and prevent data-driven artifacts ("math-washing"), the complete numerical and statistical workflows of CFECT are hard-coded for strict deterministic replication.
+CFECT introduces a **dual-axis inverse bifurcation** signature for detecting approaching critical transitions in living non-equilibrium networks. The framework operationalises systemic resilience as a complex order parameter Z = σ² + iΦ₁ on a Wang-Jin potential-flux landscape, resolving the clinical paradox where catastrophic physiological transitions occur without detectable structural abnormalities.
+
+**Key empirical finding**: Across 187,181 time-series windows from 243 subjects spanning 3 organ systems (brain, heart, sleep-state), we demonstrate a universal pattern: lag-1 autocorrelation (Φ₁, Yang) increases while variance (σ², Yin) paradoxically condenses before critical transitions — the opposite of classical Critical Slowing Down predictions.
+
+---
+
+## 🚀 Quick Start
 
 ```bash
 # Clone repository
-git clone https://github.com/cfect-org/cfect-engine.git
-cd cfect-engine
+git clone https://github.com/9981na/CFECT-Engine-XZ.git
+cd CFECT-Engine-XZ
 
 # Install dependencies
 pip install -r requirements.txt
 
-# ONE-LINE FULL REPLICATION (60 seconds)
-python reproduce_all.py
+# Run the three-gateway benchmark (Sleep-EDF real data)
+python pipelines/run_three_gateways.py
 
-# Expected output:
-#   beta_phi1z = +0.436
-#   beta_varz = -0.107
-#   Topological crossover at t = -18.32 min
+# Or run the full CSD feature extraction pipeline
+python pipelines/run_sleep_edf_csd.py
 ```
 
 ---
 
-## 📊 Verified Reproducibility
+## 📊 Verified Core Results (v11 Manuscript)
 
-| Metric | Expected Value | Verification Status |
-|--------|---------------|-------------------|
-| LMM Fixed Effect (Phi1) | +0.436 | ✅ Verified |
-| LMM Fixed Effect (Variance) | -0.107 | ✅ Verified |
-| Topological Crossover | -18.32 min | ✅ Verified |
-| Condition Number | < 40 | ✅ Verified |
-| FDR Control | α = 0.05 | ✅ Verified |
+| Metric | Value | 95% CI | Verification |
+|--------|-------|--------|-------------|
+| LMM Fixed Effect Φ₁ (Yang) | β = **+0.436** | [0.367, 0.505] | ✅ |
+| LMM Fixed Effect σ² (Yin) | β = **−0.107** | [−0.138, −0.076] | ✅ |
+| Pre-ictal Φ₁ shift (CHB-MIT) | ΔΦ₁ = **0.2359** | Cohen's d = 0.874 [0.802, 0.946] | ✅ |
+| Pre-ictal σ² shift (CHB-MIT) | Δσ² = **−0.127** | Cohen's d = −0.532 [−0.614, −0.450] | ✅ |
+| Topological crossover | **−18.32 min** | — | ✅ |
+| N1 Sleep Stage F1 | **0.402** | Human inter-rater: [0.30, 0.45] | ✅ |
+| REM-Wake Spectral Separation | **θ/α d = 1.84** | [1.62, 2.06] | ✅ |
+| Negative Shear Zone (SDDB) | **ρ = −0.128** | [−0.167, −0.089] | ✅ |
+| Cross-subject Macro F1 | **0.482** | — | ✅ |
+
+---
+
+## 📁 Datasets
+
+| Database | System | Subjects | Windows | Transition |
+|----------|--------|----------|---------|------------|
+| [CHB-MIT Scalp EEG](https://physionet.org/content/chbmit/) | Brain (cortical) | 8 | 59,990 | Inter-ictal → Pre-ictal |
+| [Sleep-EDF Expanded](https://physionet.org/content/sleep-edfx/) | Brain (sleep) | 197 | 112,633 | W/N1/N2/N3/REM |
+| [BUT-PDB ECG](https://physionet.org/content/butpdb/) | Heart (rhythm) | 15 | 12,485 | Sinus → AFIB/Bigeminy |
+| [SDDB Holter](https://physionet.org/content/sddb/) | Heart (terminal) | 23 | 2,073 | Sinus → VF/Asystole |
+| **Total** | **3 organ systems** | **243** | **187,181** | **6 transition types** |
+
+All data sourced from [PhysioNet](https://physionet.org/) under ODC-By v1.0.
 
 ---
 
 ## 🏗️ Architecture
 
 ```
-cfect-engine/
-├── .github/workflows/
-│   └── verification_ci.yml    # CI pipeline for numerical robustness
-├── data/
-│   ├── raw/                   # PhysioNet EDF/MIT-BIH raw files
-│   └── processed/             # z-score normalized feature matrices
-├── cfect_core/                # Core physics solvers
-│   ├── rolling_solver.py      # Vectorized sliding window computations
-│   ├── graybox_pinn.py        # Physics-informed neural network
-│   └── path_decoder.py        # HMM-Viterbi path integral decoder
-├── statistics/                # Statistical analysis modules
-│   ├── lmm_evaluator.py       # Mixed-effects regression
-│   ├── ols_trend_flow.py      # OLS trend regression
-│   └── fdr_chrono_bin.py      # FDR-corrected binning
-├── reproduce_all.py           # One-click reproducibility verifier
-└── requirements.txt           # Locked dependencies
+CFECT-Engine-XZ/
+├── cfect_core/                  # Core physics solvers
+│   ├── rolling_solver.py        # Vectorized sliding window CSD computations
+│   ├── graybox_pinn.py          # Physics-informed neural network (Wang-Jin decomposition)
+│   ├── path_decoder.py          # HMM-Viterbi path integral decoder
+│   ├── fluctuation_theorem.py   # Gallavotti-Cohen fluctuation symmetry verification
+│   ├── integrated_info.py       # Causal emergence ratio computation
+│   └── spatial_ews.py           # Spatial early warning signal analysis
+├── pipelines/                   # Data processing pipelines
+│   ├── run_sleep_edf_csd.py     # Sleep-EDF feature extraction
+│   ├── run_three_gateways.py    # Three-gateway benchmark suite
+│   ├── sddb_extract_afib.py     # SDDB AFIB extraction
+│   ├── sleep_edf_lmm_engine.py  # Linear mixed-model engine
+│   └── chbmit_spatial_routing.py # CHB-MIT spatial analysis
+├── statistics/                  # Statistical analysis
+│   ├── lmm_evaluator.py         # Mixed-effects regression
+│   ├── ols_trend_flow.py        # OLS trend regression & crossover detection
+│   ├── fdr_chrono_bin.py        # FDR-corrected time binning
+│   ├── critical_slowing_test.py # Classical CSD baseline
+│   └── stationarity_prescreen.py# Stationarity verification
+├── src/                         # Shared utilities
+│   ├── features.py              # Feature extraction
+│   ├── models.py                # ML models
+│   └── phase_velocity.py        # Phase-space velocity computation
+├── visualization/               # Publication-grade figures
+│   ├── generate_nature_figures_v5.py  # Main figure generation (10 panels)
+│   ├── cfect_multi_panel_viz.py       # Multi-panel visualisation
+│   └── supplementary_plots.py         # Extended data plots
+├── data/                        # Data management
+│   ├── create_precomputed.py    # Precomputed feature generation
+│   └── archive_cfect_data.py    # Data archiving
+├── reproduce_all.py             # Legacy reproducibility verifier
+├── reproducibility_harness.py   # Stress-testing & sensitivity analysis
+└── requirements.txt             # Locked dependencies
 ```
 
 ---
 
-## 🧠 Core Modules
+## 🧠 Core Theoretical Framework
 
-### cfect_core/rolling_solver.py
-NumPy sliding_window_view based high-speed vectorized computation engine:
-- Local variance calculation
-- Lag-1 autocorrelation
-- Permutation entropy
-- Complex phase-space embedding
+### Wang-Jin Potential-Flux Decomposition
 
-### cfect_core/graybox_pinn.py
-Physics-informed neural network coupled with multi-axis stochastic Hopf bifurcation:
-- Wang-Jin potential-flux decomposition (Yin/Yang)
-- Onsager-Machlup variational action
-- Wu-Xing (Five Elements) coupling topology
+For a biological network described by a state vector **X**(t):
 
-### cfect_core/path_decoder.py
-Constrained HMM-Viterbi path integral decoder:
-- Minimum action principle
-- Transition probability as kinetic barrier
-- Emission probability as potential bias
+$$\dot{\mathbf{X}} = \mathbf{f}(\mathbf{X}) + \boldsymbol{\xi}(t)$$
 
-### statistics/lmm_evaluator.py
-Group-level multi-patient random intercept MixedLM regression analyzer:
-- Random intercept to absorb individual heterogeneity
-- Fixed effect estimation for condition effects
+The steady-state probability distribution P_ss satisfies the stationary Fokker-Planck equation. The deterministic drift decomposes as:
 
-### statistics/ols_trend_flow.py
-Minute-scale renormalization time-axis OLS trend regression:
-- Time-axis normalization to [0,1] range
-- Condition number control (< 40)
-- Topological crossover detection
+$$\mathbf{f}(\mathbf{X}) = -\mathbf{D}\nabla U(\mathbf{X}) + \mathbf{v}(\mathbf{X})$$
 
-### statistics/fdr_chrono_bin.py
-10-Bin micro-renormalization and Benjamini-Hochberg FDR correction:
-- Quantile-based time partitioning
-- Independent t-tests per bin
-- Boundary detection
+where:
+- **−D∇U**: Conservative dissipative force (Yin) — drives system toward potential minima
+- **v(X)**: Non-conservative rotational force (Yang) — drives limit cycles & oscillations
+- A non-zero flux velocity field (v ≠ 0) breaks detailed balance — the signature of living systems
+
+### The CFECT Complex Order Parameter
+
+Z(t) = σ²_Z(t) + iΦ₁_Z(t), projected onto the dominant slow manifold via:
+
+$$\dot{Z} = (\alpha_{\text{eff}} + i\omega)Z - (1 + i\beta)|Z|^2Z + \Gamma(t) + \xi(t)$$
+
+The dual-axis inverse bifurcation — σ²↓ (Yin condensation) coupled with Φ₁↑ (Yang rigidification) — constitutes a universal dynamical signature of approaching critical transitions in non-equilibrium biological networks.
 
 ---
 
-## 📁 Data Preparation
+## 🔬 Pipeline Verification
 
-### CHB-MIT Scalp EEG Database
+### One-command reproducibility check
 ```bash
-# Download using WFDB
-python -c "import wfdb; wfdb.dl_database('chbmit', dl_dir='data/raw/chbmit')"
+python reproducibility_harness.py
 ```
 
-### SDDB Sudden Death Database
+### Pipeline-specific benchmarks
 ```bash
-# Download using WFDB
-python -c "import wfdb; wfdb.dl_database('sddb', dl_dir='data/raw/sddb')"
-```
+# Sleep staging benchmark (197 subjects)
+python pipelines/run_three_gateways.py
 
-### Preprocessed Data
-- `data/processed/chb_mit_csd_master.csv`: 10-patient epilepsy feature matrix (59,990 rows)
-- `data/processed/sddb_terminal_master.csv`: SDDB terminal phase transition features
+# CSD feature extraction
+python pipelines/run_sleep_edf_csd.py
 
----
-
-## 🔬 Usage Examples
-
-### Example 1: Critical Slowing Down Detection
-```python
-from cfect_core.rolling_solver import RollingSolver
-
-# Initialize solver
-solver = RollingSolver(window_size=1000, step_size=250)
-
-# Process EEG signal
-metrics = solver.compute_all_metrics(eeg_signal)
-print(f"Variance Z-score: {metrics['variance_z'][:5]}")
-print(f"Autocorrelation Z-score: {metrics['autocorrelation_z'][:5]}")
-```
-
-### Example 2: Mixed-Effects Regression
-```python
-from statistics.lmm_evaluator import LMMEvaluator
-
-evaluator = LMMEvaluator()
-evaluator.load_data('data/processed/chb_mit_csd_master.csv')
-evaluator.fit_all_csd_models()
-report = evaluator.get_coefficient_report()
-print(f"beta_phi1z = {report['beta_phi1z']:.3f}")
-print(f"beta_varz = {report['beta_varz']:.3f}")
-```
-
-### Example 3: Topological Crossover Detection
-```python
-from statistics.ols_trend_flow import OLSTrendFlow
-
-trend = OLSTrendFlow()
-trend.load_data('data/processed/chb_mit_csd_master.csv')
-trend.normalize_time_axis()
-trend.fit_trend_models()
-crossover = trend.find_crossover()
-print(f"Topological crossover at {crossover:.2f} min")
+# Spectral separation verification
+python _verify_spectral_separation.py
 ```
 
 ---
 
-## 📝 Citing CFECT
+## 📝 Citation
 
-If you use this software in your research, please cite:
+If you use this work in your research, please cite the associated manuscript:
 
 ```bibtex
-@software{cfect-engine,
-  author = {CFECT Quantum Engine Team},
-  title = {CFECT Quantum Engine: A Non-Equilibrium Statistical Mechanics Framework for Multiscale Electrophysiological Phase Transitions},
+@article{zhang2026cfect,
+  author = {Zhang, Xu},
+  title = {The Architecture of Non-Equilibrium Phase Transitions in Living Networks: 
+           A Unified Potential-Flux Paradigm for Macroscopic State Tracking},
+  journal = {Nature},
+  year = {2026},
+  note = {Under review}
+}
+```
+
+For the software:
+
+```bibtex
+@software{cfect-engine-xz,
+  author = {Zhang, Xu},
+  title = {CFECT Engine: Non-Equilibrium Statistical Mechanics Framework for 
+           Multiscale Electrophysiological Phase Transitions},
   year = {2026},
   publisher = {GitHub},
-  url = {https://github.com/cfect-org/cfect-engine},
+  url = {https://github.com/9981na/CFECT-Engine-XZ},
   version = {1.0.0}
 }
 ```
@@ -187,16 +188,15 @@ If you use this software in your research, please cite:
 
 ## 📜 License
 
-This project is licensed under the Apache-2.0 License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the Apache-2.0 License — see the [LICENSE](LICENSE) file for details.
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please read our [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on maintaining reproducibility and scientific integrity.
 
 ---
 
-**Last Updated**: 2026-05-28  
 **Version**: 1.0.0  
-**Status**: Production Ready
+**Status**: Manuscript under review at Nature

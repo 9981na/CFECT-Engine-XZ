@@ -1,6 +1,6 @@
-# Contributing to CFECT Quantum Engine
+# Contributing to CFECT Engine
 
-We welcome contributions to the CFECT Quantum Engine project! This document outlines our guidelines for contributing.
+We welcome contributions to the CFECT Engine project! This document outlines our guidelines for contributing.
 
 ## Code of Conduct
 
@@ -44,23 +44,34 @@ By participating in this project, you agree to uphold our Code of Conduct:
 ### Reproducibility Requirements
 
 All contributions must maintain the deterministic reproducibility guarantee:
-- Results must be verifiable against expected values
-- Random number generators must be seeded appropriately
+- Results must be verifiable against expected values from real data
+- Random number generators must be seeded where appropriate
 - Dependencies must be pinned to specific versions
 
-### Documentation
+### Verification
 
-- Update README.md for user-facing changes
-- Add comments for complex algorithms
-- Document any changes to the verification pipeline
-
-## Testing
-
-Run the full verification suite before submitting:
+Run the verification suite before submitting:
 
 ```bash
-python reproduce_all.py
+# Reproducibility harness (permutation test + sensitivity analysis)
+python reproducibility_harness.py
+
+# Sleep staging benchmark (requires real data)
+python pipelines/run_three_gateways.py
+
+# Spectral separation verification (requires real data)
+python _verify_spectral_separation.py
 ```
+
+## Data Access
+
+This project uses publicly available datasets from PhysioNet:
+- [CHB-MIT Scalp EEG](https://physionet.org/content/chbmit/)
+- [Sleep-EDF Expanded](https://physionet.org/content/sleep-edfx/)
+- [BUT-PDB ECG](https://physionet.org/content/butpdb/)
+- [SDDB Holter](https://physionet.org/content/sddb/)
+
+See `data/DATA_DOWNLOAD_GUIDE.md` for download instructions.
 
 ## Pull Request Review Process
 
