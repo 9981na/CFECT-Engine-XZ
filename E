@@ -1,227 +1,459 @@
 #!/usr/bin/env python3
 """
-CFECT Real-Data Master Runner — 一体化运行所有管道
-=========================================================================
-执行所有真实数据管道，带实时进度仪表盘 + 详细日志 + 最终汇总报告
+R3 — Three-Layer Nested Red Team Cycle (增强版)
+===============================================
+Layer 1 (外层): 版本推进 — vN → diagnosis → critique → cross-exam → consolidate → vN+1
+Layer 2 (中层): 按工件循环 — 手稿正文 → 图件 → 补充材料
+Layer 3 (内层): Agent交叉辩驳 — R1 critique → R2 cross-exam → Consensus Gate
+
+核心改进:
+  - Nature 正刊硬标尺: 每次红队逐条对照 r3_nature_redteam_criteria.md
+  - 沙河桥: Agent 说"缺实验"时自动捕获已有结果或生成可执行指令
+  - 交叉辩驳: Agent 互审彼此批评，E_Editor 做最终争议判定
 
 用法:
-  python run_all_real.py                    # 运行全部
-  python run_all_real.py --skip-sleep-edf    # 跳过慢的
-  python run_all_real.py --fast-only         # 只跑快的
-  python run_all_real.py --dry-run           # 只检查不走
+  python flagship/r3_nature_redteam_cycle.py --run run8 --in-draft v9
+  python flagship/r3_nature_redteam_cycle.py --run run8 --phase layer1
+
+输出: generated_manuscript/{run}/_flagship/step4_review/
 """
 
-import os, sys, json, time, importlib, inspect, traceback
-from datetime import datetime
-from pathlib import Path
-from typing import Dict, Any
+import os, json, argparse
+from datetime import datetime, timezone
 
-BASE = Path(r"E:\MEM\paper\real")
-PIPELINES_DIR = BASE / "pipelines"
-OUTPUTS_DIR = BASE / "outputs"
-DATA_DIR = BASE / "data"
+BASE = "E:/MEM/paper"
+CRITERIA_FILE = os.path.join(BASE, "flagship", "r3_nature_redteam_criteria.md")
+R1_MANIFEST = os.path.join(BASE, "flagship", "r1_instruction_manifest.md")
+NATURE_SKILLS = os.path.join(BASE, "flagship", "nature-skills", "plugins", "nature-skills", "skills")
 
-os.makedirs(OUTPUTS_DIR, exist_ok=True)
+AGENTS = {
+    "A_Physicist": "Mathematics & Physics — scrutinise gamma1 ceiling, GL free energy, GC symmetry, Hopf bifurcation, causal emergence",
+    "B_Clinician": "Clinical Data — data sources, sample sizes, N1 F1=0.16 paradox, cross-organ validity",
+    "C_Statistician": "Statistics — effect sizes, permutation tests, FDR correction, spectral separation, classification metrics",
+    "D_Philosopher": "Logic & Conceptual — consciousness triad, Zhengqi mapping, falsifiability, emergence vs reductionism",
+    "E_Editor_RedTeam": "Comprehensive Adversarial Review — narrative, competition, novelty, reproducibility, top-3 harshest criticisms",
+}
 
-
-def setup_master_log():
-    """Setup master log file."""
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    log_path = OUTPUTS_DIR / f"run_all_real_{timestamp}.log"
-    f = open(log_path, 'w', encoding='utf-8')
-    return f, log_path, timestamp
-
-
-def log(msg, f=None, end='\n'):
-    """Print to both console and log file."""
-    print(msg, end=end)
-    if f and not f.closed:
-        f.write(msg + end)
-        f.flush()
+RESULTS_DIR = os.path.join(BASE, "results")
+PIPELINES_DIR = os.path.join(BASE, "pipelines")
+VERIFICATION_VALUES = os.path.join(BASE, "response_verification", "data", "verification_values.json")
 
 
-def load_and_run(module_path: Path, log_f, results: Dict, label: str) -> Dict[str, Any]:
-    """动态加载并运行一个管道模块。"""
+def utc_stamp():
+    return datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="R3 — Three-Layer Nested Red Team Cycle")
+    parser.add_argument("--run", default="run8", help="Run directory (e.g., run8)")
+    parser.add_argument("--in-draft", default="v9", help="Input draft version (e.g., v9)")
+    parser.add_argument("--phase", default=None, help="Run specific phase only")
+    return parser.parse_args()
+
+
+def get_run_paths(run_id):
+    base = os.path.join(BASE, "generated_manuscript", run_id, "_flagship")
+    return {
+        "base": base,
+        "draft": os.path.join(base, "step5_draft"),
+        "review": os.path.join(base, "step4_review"),
+        "submission": os.path.join(base, "step6_submission"),
+        "audit": os.path.join(base, "step9_skills_audit"),
+        "corpus": os.path.join(base, "r2_corpus"),
+        "design": os.path.join(base, "step3_design"),
+    }
+
+
+def read_file_safe(path):
+    if not os.path.isfile(path):
+        return None
     try:
-        # 动态导入
-        import importlib.util
-        spec = importlib.util.spec_from_file_location(
-            module_path.stem, str(module_path)
-        )
-        mod = importlib.util.module_from_spec(spec)
-        # 把路径加到sys.path让内部imports能工作
-        sys.path.insert(0, str(module_path.parent.parent.parent))
-        sys.path.insert(0, str(module_path.parent))
-        spec.loader.exec_module(mod)
-
-        log(f"\n{'─' * 60}", log_f)
-        log(f"▶ [{label}] Loading module: {module_path.name}", log_f)
-        log(f"{'─' * 60}", log_f)
-
-        # 找到run_pipeline函数并执行
-        if hasattr(mod, 'run_pipeline'):
-            t_start = time.time()
-            result = mod.run_pipeline()
-            elapsed = time.time() - t_start
-            status = '✓ OK' if result is not None else '⚠ PARTIAL'
-            log(f"\n[{status}] {label} completed in {elapsed:.1f}s", log_f)
-            results[label] = {
-                'status': status,
-                'elapsed': round(elapsed, 1),
-                'result': result if isinstance(result, dict) else {},
-            }
-        else:
-            log(f"  ⚠ No run_pipeline() function found in {module_path.name}", log_f)
-            results[label] = {'status': '⚠ NO ENTRY', 'elapsed': 0}
-
+        with open(path, 'r', encoding='utf-8') as f:
+            return f.read()
     except Exception as e:
-        elapsed = 0
-        log(f"\n[✗ FAIL] {label}: {e}", log_f)
-        log(traceback.format_exc(), log_f)
-        results[label] = {'status': '✗ FAIL', 'elapsed': 0, 'error': str(e)}
-
-    return results
+        return f"<ERROR: {e}>"
 
 
-def print_summary(results: Dict, log_f, total_elapsed: float, timestamp: str):
-    """打印/写入汇总表。"""
+def write_output(paths, subdir, filename, content):
+    d = paths[subdir] if subdir in paths else os.path.join(paths["base"], subdir)
+    os.makedirs(d, exist_ok=True)
+    fp = os.path.join(d, filename)
+    with open(fp, 'w', encoding='utf-8') as f:
+        f.write(content)
+    print(f"  [OK] {os.path.relpath(fp, BASE)}")
+    return fp
+
+
+# ─── Sandbox Bridge ───────────────────────────────────────────────
+
+def sandbox_bridge(gap_description):
+    """
+    沙河桥 — 当红队指出"缺实验"时，自动捕获已有结果。
+    """
+    if os.path.isdir(RESULTS_DIR):
+        result_files = [f for f in os.listdir(RESULTS_DIR)
+                        if os.path.isfile(os.path.join(RESULTS_DIR, f)) and f != '.gitkeep']
+        if result_files:
+            return ("HAS_RESULTS", "Found {0} result files. Files: {1}".format(
+                len(result_files), ', '.join(result_files[:10])))
+
+    if os.path.isfile(VERIFICATION_VALUES):
+        try:
+            vv = json.load(open(VERIFICATION_VALUES, 'r', encoding='utf-8'))
+            return ("HAS_VERIFICATION", "verification_values.json has {0} keys: {1}".format(
+                len(vv), list(vv.keys())[:15]))
+        except Exception:
+            pass
+
+    if os.path.isdir(PIPELINES_DIR):
+        py_files = [f for f in os.listdir(PIPELINES_DIR)
+                    if f.endswith('.py') and not f.startswith('_')]
+        if py_files:
+            return ("HAS_PIPELINE", "Available: {0}. Run: python pipelines/{{name}}".format(
+                ', '.join(py_files[:8])))
+
+    return ("GENUINE_GAP", "No existing data or pipeline for: " + gap_description)
+
+
+# ─── Layer 1: Nature-Writing Restructure ────────────────────────
+
+def layer1_nature_writing(paths, in_draft_version, prev_run_review):
+    """Generate nature-writing restructure packet with criteria + sandbox bridge."""
+    print("[Layer 1] Nature-Writing Restructure ({0} -> v10) ...".format(in_draft_version))
+
+    manifest = read_file_safe(R1_MANIFEST)
+    criteria = read_file_safe(CRITERIA_FILE)
+
+    draft = None
+    for candidate_run in ["run7", "run6", "run5"]:
+        for ver in ["nature_draft_{0}.md".format(in_draft_version), "nature_draft_v10.md"]:
+            fp = os.path.join(BASE, "generated_manuscript", candidate_run, "_flagship", "step5_draft", ver)
+            content = read_file_safe(fp)
+            if content:
+                draft = content
+                print("  Loaded {0} from {1} ({2} chars)".format(ver, candidate_run, len(draft)))
+                break
+        if draft:
+            break
+    if not draft:
+        draft = "(no draft found)"
+        print("  [WARN] No draft found")
+
+    nw_base = os.path.join(NATURE_SKILLS, "nature-writing")
+    skill_md = read_file_safe(os.path.join(nw_base, "SKILL.md"))
+    article_arch = read_file_safe(os.path.join(nw_base, "references", "article-architecture.md"))
+
+    components = [
+        "# R3 Layer 1 — Nature-Writing Restructure Instruction Packet\n",
+        "## R1 Manifest (Constraints)",
+        "```", manifest or "(no manifest)", "```\n",
+        "## Nature Hard-Bar Criteria (逐条对照)",
+        "```", criteria or "(no criteria)", "```\n",
+        "## Nature-Writing SKILL.md",
+        "```", skill_md or "(no skill)", "```\n",
+        "## Article Architecture Reference",
+        "```", article_arch or "(no arch ref)", "```\n",
+        "## Input Draft ({0})".format(in_draft_version),
+        "```", draft, "```\n",
+        "## Sandbox Bridge — Available Assets\n```",
+    ]
+
+    for gap in ["permutation test for gamma1 ceiling stability",
+                "Cohen's d confidence intervals",
+                "cross-modal gamma1 comparison (EEG vs ECG vs Sleep-EDF)"]:
+        status, evidence = sandbox_bridge(gap)
+        components.append("  [{0}] {1}: {2}".format(status, gap, evidence))
+
+    components.append("```\n## Instructions\n")
+    components.append("""Apply Nature Hypothesis structure to produce v10 draft:
+1. Evidence ladder, not incremental results
+2. 8-step writing workflow from SKILL.md
+3. Article architecture reference for ordering
+4. Integrate all sandbox-bridge findings from above
+5. Word count: 5800-8000 words
+""")
+
+    write_output(paths, "step3_design", "layer1_nature_writing_packet.md", "\n".join(components))
+    return True
+
+
+# ─── Layer 3 Inner: Per-Agent Critique (R1) ─────────────────────
+
+def layer3_round1_critique(paths, in_draft_content, prev_critiques, agent_id, agent_desc):
+    """Round 1: Independent critique per agent."""
+    criteria = read_file_safe(CRITERIA_FILE)
+    components = [
+        "# R3 Layer 3 — Round 1: {0}".format(agent_id),
+        "Role: {0}".format(agent_desc),
+        "Generated: {0}\n".format(utc_stamp()),
+        "## Nature Hard-Bar Criteria (逐条对照)",
+        "```", criteria or "(no criteria)", "```\n",
+        "## Latest Draft (Review Subject)",
+        "```", in_draft_content, "```\n",
+        "## Previous Critiques (for context)",
+        "```", prev_critiques, "```\n",
+        "## Agent-Specific Instructions\n",
+        """
+As {0}, produce a REAL, substantive critique of the CFECT manuscript.
+You MUST follow the Nature hard-bar criteria above. For each criterion,
+give PASS/MARGINAL/FAIL with specific evidence from the manuscript.
+
+Critical rules:
+1. Be SPECIFIC — reference actual sections, equations, numbers
+2. Be CONSTRUCTIVE — state what must change and why
+3. Cross-reference against the Nature hard-bar criteria checklist
+4. If you find a missing experiment, suggest what data/pipeline could fill it
+
+Structure:
+## Hard-Bar Assessment (PASS/MARGINAL/FAIL per criterion)
+## Summary
+## Major Issues
+## Minor Issues
+## What's Done Well
+## Verdict: Accept / Minor Revision / Major Revision / Reject
+## Experimental Gaps (for sandbox bridge)
+""".format(agent_id)
+    ]
+    return write_output(paths, "step4_review", "round1_{0}.md".format(agent_id), "\n".join(components))
+
+
+# ─── Layer 3 Inner: Cross-Examination (R2) ───────────────────────
+
+def layer3_round2_crossexam(paths, in_draft_content, all_r1_critiques, agent_id, agent_desc):
+    """
+    Round 2: Cross-examination.
+    - A_Physicist reviews C_Statistician's stats
+    - C_Statistician reviews B_Clinician's sample sizes
+    - B_Clinician reviews A_Physicist's clinical feasibility
+    - D_Philosopher reviews everyone's logic
+    - E_Editor_RedTeam writes final adjudication
+    """
+    cross_pairs = {
+        "A_Physicist": ("C_Statistician", "Are the statistical methods physically valid? Are effect sizes adequate?"),
+        "B_Clinician": ("A_Physicist", "Is the math framework clinically deployable? Are physiological assumptions valid?"),
+        "C_Statistician": ("B_Clinician", "Are sample sizes sufficient for statistical power? Are analysis methods appropriate?"),
+        "D_Philosopher": ("A_Physicist", "Is the logic chain complete? Are the philosophical assumptions about consciousness defensible?"),
+    }
+
+    if agent_id == "E_Editor_RedTeam":
+        r1_all_text = "\n\n---\n\n".join(
+            "### {0}\n{1}".format(k, v) for k, v in all_r1_critiques.items()
+        )
+        components = [
+            "# R3 Layer 3 — Round 2 Cross-Examination: {0}".format(agent_id),
+            "Role: {0}".format(agent_desc),
+            "Generated: {0}\n".format(utc_stamp()),
+            "## All Round 1 Critiques",
+            r1_all_text, "\n",
+            "## Adjudication Instructions\n",
+            """
+As E_Editor_RedTeam, review ALL five Round 1 critiques and:
+
+1. Identify CONTRADICTIONS between agents' assessments
+2. Identify CONVERGENCE — issues that multiple agents flagged independently
+3. Resolve disagreements (who is right?)
+4. Assign priority: CRITICAL / HIGH / MODERATE / LOW
+5. Produce the Consensus Verdict
+
+Use the Consensus Gate rules from r3_nature_redteam_criteria.md:
+- 4+ Accept -> RECOMMENDED
+- 2-3 Accept, Major Revision -> REVISE
+- 2+ Reject or 3+ FAIL -> REJECT
+- E_Editor = Reject -> ABORT
+
+Structure:
+## Contradictions Found
+## Convergent Issues (by frequency)
+## Priority-Ordered Fix List
+## Consensus Verdict
+"""
+        ]
+        return write_output(paths, "step4_review", "round2_E_Editor_RedTeam.md", "\n".join(components))
+
+    else:
+        target, question = cross_pairs.get(agent_id, ("A_Physicist", "Review the critique."))
+        target_critique = all_r1_critiques.get(target, "(not found)")
+
+        components = [
+            "# R3 Layer 3 — Round 2 Cross-Examination: {0}".format(agent_id),
+            "Role: {0}".format(agent_desc),
+            "Generated: {0}\n".format(utc_stamp()),
+            "## Cross-Examination Target: {0}".format(target),
+            "Question: {0}\n".format(question),
+            "## Target's Round 1 Critique\n```",
+            target_critique, "```\n",
+            "## The Latest Manuscript\n```",
+            in_draft_content, "```\n",
+            "## Cross-Examination Instructions\n",
+            """
+As {0}, cross-examine {1}'s Round 1 critique.
+
+1. Do you AGREE or DISAGREE with their assessment? Why?
+2. Did they miss any critical issues?
+3. Are their suggestions scientifically sound?
+4. Are there contradictions between your critique and theirs?
+
+If you identified missing experiments in Round 1, also run sandbox bridge:
+- Check if data already exists in results/
+- Check if pipelines can produce it
+
+Structure:
+## Points of Agreement
+## Points of Disagreement
+## Issues They Missed
+## Sandbox Bridge Findings (experimental gaps)
+## Final Position
+""".format(agent_id, target)
+        ]
+        return write_output(paths, "step4_review", "round2_{0}.md".format(agent_id), "\n".join(components))
+
+
+# ─── Layer 3 Inner: Consensus Gate ──────────────────────────────
+
+def layer3_consensus_gate(paths):
+    """Generate consensus gate JSON and summary from Round 2 outputs."""
+    review_dir = paths["review"]
+    r2_files = [f for f in os.listdir(review_dir) if f.startswith("round2_") and f.endswith(".md")]
+    editor_file = [f for f in r2_files if "E_Editor" in f]
+
+    consensus = {
+        "run": os.path.basename(paths["base"]).replace("run", ""),
+        "round": 2,
+        "timestamp": utc_stamp(),
+        "agents": list(AGENTS.keys()),
+        "r2_cross_exam_completed": True,
+        "status": "pending_consensus",
+        "editor_adjudication_path": editor_file[0] if editor_file else "(not found)",
+    }
+
+    jp = os.path.join(review_dir, "round2_consensus.json")
+    with open(jp, 'w', encoding='utf-8') as f:
+        json.dump(consensus, f, indent=2, ensure_ascii=False)
+    print("  [OK] round2_consensus.json")
+
     lines = [
-        '',
-        '=' * 70,
-        '  CFECT REAL-DATA EXECUTION SUMMARY',
-        f'  Timestamp: {timestamp}',
-        f'  Total time: {total_elapsed:.1f}s',
-        '=' * 70,
-        f'  {"Pipeline":<30s} {"Status":<12s} {"Time":<8s} Key Result',
-        f'  {"─" * 28}  {"─" * 10}  {"─" * 6}  {"─" * 20}',
+        "# R3 Layer 3 — Consensus Gate\n",
+        "Run: {0}, Round: {1}".format(consensus["run"], consensus["round"]),
+        "Timestamp: {0}\n".format(consensus["timestamp"]),
+        "## Round 2 Outputs Generated\n",
     ]
+    for fname in sorted(r2_files):
+        fp = os.path.join(review_dir, fname)
+        sz = os.path.getsize(fp)
+        lines.append("- {0} ({1:,} bytes)".format(fname, sz))
 
-    for label, info in results.items():
-        status = info.get('status', '?')
-        elapsed = info.get('elapsed', 0)
-        result = info.get('result', {}) or {}
-        # Extract a key result
-        key = ''
-        if 'permutation_p' in result:
-            p = result['permutation_p']
-            key = f"P={p:.4f}"
-        elif 'epr_mean' in result.get('fluctuation_theorem', {}):
-            epr = result['fluctuation_theorem']['epr_mean']
-            key = f"EPR={epr:.3f}"
-        elif 'mean_acc_hmm' in result:
-            key = f"HMM={result['mean_acc_hmm']:.1f}%"
-        elif 'n_critical_points' in result:
-            key = f"Critical={result['n_critical_points']}"
+    lines.append("\n## Next Steps\n")
+    lines.append("1. Review Editor adjudication for consensus verdict")
+    lines.append("2. If REVISE: incorporate fixes into v10 -> produce v11")
+    lines.append("3. If RECOMMENDED: prepare submission package")
+    lines.append("4. If REJECT/ABORT: back to R2 knowledge collection")
 
-        lines.append(f"  {label:<30s} {status:<12s} {elapsed:<6.1f}s {key}")
+    write_output(paths, "step4_review", "consensus_gate_summary.md", "\n".join(lines))
+    return True
 
-    lines += [
-        '=' * 70,
-        f'  Log file: outputs/run_all_real_{timestamp}.log',
-        '=' * 70,
-    ]
 
-    summary = '\n'.join(lines)
-    log(summary, log_f)
+# ─── Layer 3: Full Red Team Cycle ───────────────────────────────
 
+def layer3_redteam_cycle(paths, in_draft_version, prev_run_review, rounds=2):
+    """Full red team cycle: R1 -> R2 -> Consensus Gate."""
+    print("[Layer 3] 5-Agent Red Team Cycle ({0} rounds) ...".format(rounds))
+
+    in_draft_content = (
+        read_file_safe(os.path.join(paths["draft"], "nature_draft_v10.md"))
+        or read_file_safe(os.path.join(BASE, "generated_manuscript", "run7", "_flagship", "step5_draft", "nature_draft_v9.md"))
+        or ""
+    )
+
+    prev_critiques = []
+    if prev_run_review:
+        for agent_id in AGENTS:
+            c = read_file_safe(os.path.join(prev_run_review, "round1_{0}.md".format(agent_id)))
+            if c:
+                prev_critiques.append("### {0}\n{1}...".format(agent_id, c[:2000]))
+    prev_text = "\n".join(prev_critiques) if prev_critiques else "(no previous critiques)"
+
+    # Round 1
+    print("  [Round 1] Independent critiques ...")
+    all_r1 = {}
+    for agent_id, agent_desc in AGENTS.items():
+        path = layer3_round1_critique(paths, in_draft_content, prev_text, agent_id, agent_desc)
+        content = read_file_safe(path)
+        all_r1[agent_id] = content[:3000] if content else ""
+
+    if rounds >= 2:
+        # Round 2
+        print("  [Round 2] Cross-examination ...")
+        for agent_id, agent_desc in AGENTS.items():
+            layer3_round2_crossexam(paths, in_draft_content, all_r1, agent_id, agent_desc)
+
+        # Consensus Gate
+        print("  [Consensus Gate] ...")
+        layer3_consensus_gate(paths)
+
+    return True
+
+
+# ─── Main ────────────────────────────────────────────────────────
 
 def main():
-    import argparse
-    parser = argparse.ArgumentParser(description='CFECT Real-Data Master Runner')
-    parser.add_argument('--fast-only', action='store_true',
-                        help='Only run fast pipelines (< 1min)')
-    parser.add_argument('--skip-sleep-edf', action='store_true',
-                        help='Skip Sleep-EDF (the slowest)')
-    parser.add_argument('--dry-run', action='store_true',
-                        help='Print what would be run without executing')
-    parser.add_argument('--pipeline', type=str, default=None,
-                        help='Run a specific pipeline by filename (e.g., run_chbmit_csd)')
-    args = parser.parse_args()
+    args = parse_args()
+    run_id = args.run
+    in_draft_version = args.in_draft
 
-    log_f, log_path, timestamp = setup_master_log()
-    log_path_str = str(log_path)
+    print("=" * 60)
+    print("R3 — Three-Layer Nested Red Team Cycle ({0})".format(run_id))
+    print("Input: {0}, Phase: {1}".format(in_draft_version, args.phase or "all"))
+    print("=" * 60)
 
-    log(f'{"=" * 60}', log_f)
-    log(f'CFECT REAL-DATA MASTER RUNNER', log_f)
-    log(f'Timestamp: {timestamp}', log_f)
-    log(f'Log file: {log_path_str}', log_f)
-    log(f'{"=" * 60}', log_f)
+    paths = get_run_paths(run_id)
+    os.makedirs(paths["base"], exist_ok=True)
 
-    # Define pipelines in execution order
-    pipelines = [
-        {
-            'name': 'CHB-MIT CSD',
-            'file': 'run_chbmit_csd.py',
-            'fast': True,
+    prev_run_review = None
+    for candidate in ["run7", "run6", "run5"]:
+        p = os.path.join(BASE, "generated_manuscript", candidate, "_flagship", "step4_review")
+        if os.path.isdir(p):
+            prev_run_review = p
+
+    if not args.phase or args.phase == "layer1":
+        layer1_nature_writing(paths, in_draft_version, prev_run_review)
+
+    if not args.phase or args.phase == "layer3":
+        layer3_redteam_cycle(paths, in_draft_version, prev_run_review, rounds=2)
+
+    manifest = {
+        "run": run_id,
+        "generated": utc_stamp(),
+        "input_draft": in_draft_version,
+        "criteria_file": os.path.relpath(CRITERIA_FILE, BASE),
+        "layers": {
+            "layer1_nature_writing": "generated packet in step3_design",
+            "layer3_redteam_round1": "5 critique files in step4_review",
+            "layer3_redteam_round2": "5 cross-exam + consensus gate in step4_review",
         },
-        {
-            'name': 'SDDB Solver',
-            'file': 'run_sddb_solver.py',
-            'fast': True,
-        },
-        {
-            'name': 'ECG Phase',
-            'file': 'run_ecg_phase.py',
-            'fast': True,
-        },
-        # Sleep-EDF放在最后（最慢）
-        {
-            'name': 'Sleep-EDF',
-            'file': 'run_sleep_edf.py',
-            'fast': False,
-        },
-    ]
+        "next_steps": [
+            "1. Execute Layer 1: Apply nature-writing packet -> produce v10 draft",
+            "2. Execute Layer 3 Round 1: Fill in critique content for each agent",
+            "3. Execute Layer 3 Round 2: Fill in cross-examination content",
+            "4. Execute Consensus Gate: Editor adjudication -> pass/revise/reject",
+            "5. If REVISE: apply fixes -> v11",
+            "6. Run nature-citation + nature-data for submission bundle",
+        ],
+    }
 
-    # Apply filters
-    if args.fast_only:
-        pipelines = [p for p in pipelines if p.get('fast', False)]
-        log(f"\n[FILTER] Fast-only mode: {len(pipelines)} pipelines", log_f)
+    mp = os.path.join(paths["base"], "{0}_manifest.json".format(run_id))
+    with open(mp, 'w', encoding='utf-8') as f:
+        json.dump(manifest, f, indent=2, ensure_ascii=False)
+    print("  [OK] {0}".format(os.path.relpath(mp, BASE)))
 
-    if args.skip_sleep_edf:
-        pipelines = [p for p in pipelines if p['name'] != 'Sleep-EDF']
-        log(f"\n[FILTER] Skipping Sleep-EDF: {len(pipelines)} pipelines", log_f)
-
-    if args.pipeline:
-        pipelines = [p for p in pipelines if args.pipeline in p['file']]
-        log(f"\n[FILTER] Specific pipeline '{args.pipeline}': {len(pipelines)} match", log_f)
-
-    # Announce plan
-    log(f"\nPipelines to run:", log_f)
-    for i, p in enumerate(pipelines):
-        speed = '⚡' if p.get('fast') else '⏳'
-        log(f"  {i + 1}. {speed} {p['name']:15s} ({p['file']})", log_f)
-
-    if args.dry_run:
-        log(f"\n[Dry Run] No pipelines executed. Use --dry-run to run.", log_f)
-        log_f.close()
-        return
-
-    if not pipelines:
-        log(f"\n[WARN] No pipelines match the given filters.", log_f)
-        log_f.close()
-        return
-
-    # Execute each pipeline
-    results = {}
-    t_total_start = time.time()
-
-    for p in pipelines:
-        module_path = PIPELINES_DIR / p['file']
-        if not module_path.exists():
-            log(f"\n[✗] Module not found: {module_path}", log_f)
-            results[p['name']] = {'status': '✗ NOT FOUND', 'elapsed': 0}
-            continue
-        results = load_and_run(module_path, log_f, results, p['name'])
-
-    total_elapsed = time.time() - t_total_start
-
-    # Print summary
-    print_summary(results, log_f, total_elapsed, timestamp)
-
-    log(f"\nAll pipelines complete. Log: {log_path_str}", log_f)
-    log_f.close()
-    print(f"\nDone. Full log at:\n  {log_path_str}")
+    print("\n" + "=" * 60)
+    print("R3 Orchestrator Complete. Output in: {0}/".format(run_id))
+    print("=" * 60)
+    print("\nNEXT STEPS:")
+    print("  1. Write v10 draft to: {0}/nature_draft_v10.md".format(paths["draft"]))
+    print("  2. Fill in all round1_*.md files with agent critiques")
+    print("  3. Run cross-examination: python {0} --run {1} --phase layer3".format(__file__, run_id))
+    print("  4. Review consensus gate summary")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
